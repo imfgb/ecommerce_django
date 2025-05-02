@@ -1,0 +1,15 @@
+# Ignorar el entorno virtual
+ecomenv/
+
+# Ignorar configuración sensible de Django
+ecommerce_site/settings.py
+
+# Ignorar archivos de Python compilados y caché
+__pycache__/
+*.pyc
+
+# Base de datos local (si usas SQLite)
+db.sqlite3
+
+# Archivos de entorno
+.env

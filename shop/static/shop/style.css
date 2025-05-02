@@ -1,0 +1,25 @@
+body {
+    background-color: lightblue;
+}
+
+.card-text{
+    color: green;
+    font-weight: 800;
+
+}
+
+.card-title{
+    font-weight: 900;
+}
+
+.card-img-top {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    margin: 0 auto;
+}
+
+#cardd {
+    width: 260px;
+    height: 500px;
+}
