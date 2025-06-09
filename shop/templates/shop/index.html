@@ -6,12 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{% static 'shop/style.css' %}">
     <title>Document</title>
 </head>
 <body>
-
     <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <div class="container-fluid">
+                      <a class="navbar-brand" href="#">Navbar</a>
+                      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                      </button>
+                      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                        <div class="navbar-nav">
+                          <a class="nav-link active" aria-current="page" href="#">Home</a>
+                          <a class="nav-link" href="#">Features</a>
+                          <button id="cart" type="button" class="btn btn-secondary" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Bottom popover">
+                            Cart(0)
+                          </button>
+                          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                        </div>
+                      </div>
+                    </div>
+                  </nav>
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12">
                 <form class="card card-sm">
@@ -27,7 +49,6 @@
             </div>
         </div>
     </div>
-
     <div class="container">
         <div class="row">
             {% for product in product_objects %}
@@ -48,15 +69,13 @@
                         <div class="card-text">
                             $ {{ product.price }}
                         </div>
-
                         <a href="/{{ product.id }}" class="btn btn-warning">View</a>
-                        <a class="btn btn-warning">Add to Cart</a>
+                        <button id="{{product.id}}" class="btn atc btn-warning">Add to Cart</button>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-
         <div class="row">
             <div class="col-md-3 offset-md-4">
                 <ul class="pagination">
@@ -65,22 +84,48 @@
                             <a class="page-link" href="?page={{ product_objects.previous_page_number }}">Previous</a>
                         </li>
                     {% endif %}
-
-
-
                     <li class="page-item active">
                         <a class="page-link" href="?page={{ product_objects.number }}">Current</a>
                     </li>    
-
                     {% if product_objects.has_next %}
                         <li class="page-item">
                             <a class="page-link" href="?page={{ product_objects.next_page_number }}">Next</a>
                         </li>
                     {% endif %}
-
                 </ul>
             </div>
         </div>
     </div>
 </body>
+<script type="text/javascript">
+    console.log('This is working');
+
+    if(localStorage.getItem('cart')==null){
+        var cart = {};
+    }
+    else{
+        cart = JSON.parse(localStorage.getItem('cart'));
+    }
+    
+    $(document).on('click','.atc',function(){
+        console.log("The add to cart button is clicked");
+        var item_id = this.id.toString();
+        console.log(item_id);
+
+        if(cart[item_id] != undefined){
+            cart[item_id] = cart[item_id] + 1;
+            
+        }
+        else{
+            cart[item_id] = 1;
+        }
+        console.log(cart);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        document.getElementById("cart").innerHTML = "Cart("+ Object.keys(cart).length+")";
+    });
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl)
+    })
+</script>
 </html>
