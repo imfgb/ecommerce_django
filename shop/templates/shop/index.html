@@ -2,130 +2,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{% static 'shop/style.css' %}">
-    <title>Document</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+    crossorigin="anonymous"/>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+  <script
+    src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="{% static 'shop/style.css' %}"/>
+  <title>Ecommerce</title>
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                    <div class="container-fluid">
-                      <a class="navbar-brand" href="#">Navbar</a>
-                      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                      </button>
-                      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                        <div class="navbar-nav">
-                          <a class="nav-link active" aria-current="page" href="#">Home</a>
-                          <a class="nav-link" href="#">Features</a>
-                          <button id="cart" type="button" class="btn btn-secondary" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Bottom popover">
-                            Cart(0)
-                          </button>
-                          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                        </div>
-                      </div>
-                    </div>
-                  </nav>
-            </div>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Brand</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="navbar-nav">
+          <a class="nav-link active" href="#">Home</a>
+          <a class="nav-link" href="#">Features</a>
+          <button
+            id="cart"
+            type="button"
+            class="btn btn-secondary"
+            data-bs-placement="bottom">
+              Cart(0)
+          </button>
+          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <form class="card card-sm">
-                    <div class="card-body row no-gytters align-items-center">
-                        <div class="col">
-                            <input type="search" name='item_name' placeholder="Search for products" class="form-control form-control-borderless">
-                        </div>
-                        <div class="col-auto">
-                            <button class="btn btn-success" type="submit">Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="container">
-        <div class="row">
-            {% for product in product_objects %}
-            <div class="col-md-3">
-                <div id="cardd" class="card">
-                    <img src="{{ product.image }}" class="card-img-top">
-                    <div class="card-body">
-                        <div class="card-title">
-                            {{ product.title }}
-                        </div>
-                        <div class="card-title">
-                            {{ product.category }}
-                        </div>
-                        <div class="card-title">
-                            {{ product.description }}
-                        </div>
-                        <br>
-                        <div class="card-text">
-                            $ {{ product.price }}
-                        </div>
-                        <a href="/{{ product.id }}" class="btn btn-warning">View</a>
-                        <button id="{{product.id}}" class="btn atc btn-warning">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+  </nav>
+
+  <div class="container mt-4">
+    <form class="card card-sm mb-4">
+      <div class="card-body row g-0 align-items-center">
+        <div class="col">
+          <input
+            type="search"
+            name="item_name"
+            class="form-control form-control-borderless"
+            placeholder="Search for products"/>
         </div>
-        <div class="row">
-            <div class="col-md-3 offset-md-4">
-                <ul class="pagination">
-                    {% if product_objects.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ product_objects.previous_page_number }}">Previous</a>
-                        </li>
-                    {% endif %}
-                    <li class="page-item active">
-                        <a class="page-link" href="?page={{ product_objects.number }}">Current</a>
-                    </li>    
-                    {% if product_objects.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ product_objects.next_page_number }}">Next</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
+        <div class="col-auto">
+          <button class="btn btn-success" type="submit">Search</button>
         </div>
+      </div>
+    </form>
+
+    <div class="row">
+      {% for product in product_objects %}
+      <div class="col-md-3 mb-4">
+        <div class="card">
+          <img
+            src="{{ product.image }}"
+            class="card-img-top"
+            alt="{{ product.title }}"/>
+          <div class="card-body">
+            <h5 id="nm{{ product.id }}" class="card-title">{{ product.title }}</h5>
+            <p class="card-text">{{ product.category }}</p>
+            <p class="card-text">{{ product.description }}</p>
+            <p class="card-text">${{ product.price }}</p>
+            <a href="/{{ product.id }}" class="btn btn-warning">View</a>
+            <button id="{{ product.id }}" class="btn atc btn-warning">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
-</body>
-<script type="text/javascript">
-    console.log('This is working');
 
-    if(localStorage.getItem('cart')==null){
-        var cart = {};
-    }
-    else{
-        cart = JSON.parse(localStorage.getItem('cart'));
-    }
-    
-    $(document).on('click','.atc',function(){
-        console.log("The add to cart button is clicked");
-        var item_id = this.id.toString();
-        console.log(item_id);
+    <div class="row">
+      <div class="col-md-3 offset-md-4">
+        <ul class="pagination">
+          {% if product_objects.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ product_objects.previous_page_number }}">Previous</a>
+          </li>
+          {% endif %}
+          <li class="page-item active">
+            <a class="page-link" href="?page={{ product_objects.number }}">{{ product_objects.number }}</a>
+          </li>
+          {% if product_objects.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ product_objects.next_page_number }}">Next</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
 
-        if(cart[item_id] != undefined){
-            cart[item_id] = cart[item_id] + 1;
-            
-        }
-        else{
-            cart[item_id] = 1;
-        }
-        console.log(cart);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        document.getElementById("cart").innerHTML = "Cart("+ Object.keys(cart).length+")";
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const cartBtn = document.getElementById('cart');
+    let cart = JSON.parse(localStorage.getItem('cart') || '{}');
+
+    function updateCounter() {
+      const totalQty = Object.values(cart).reduce((sum, item) => sum + item.qty, 0);
+      cartBtn.textContent = `Cart(${totalQty})`;
+    }
+
+    function generateCartContent() {
+      if (!Object.keys(cart).length) {
+        return '<p><em>Your cart is empty</em></p>';
+      }
+      let html = '';
+      let index = 1;
+      for (const id in cart) {
+        const item = cart[id];
+        html += `${index}. ${item.title} — Qty: ${item.qty}<br/>`;
+        index++;
+      }
+      return html;
+    }
+
+    cartBtn.addEventListener('click', function() {
+      const existing = bootstrap.Popover.getInstance(cartBtn);
+      if (existing) existing.dispose();
+      new bootstrap.Popover(cartBtn, {
+        html: true,
+        title: 'Your cart',
+        content: generateCartContent(),
+        trigger: 'manual',
+        placement: 'bottom'
+      }).show();
     });
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-      return new bootstrap.Popover(popoverTriggerEl)
-    })
-</script>
+
+    document.body.addEventListener('click', function(e) {
+      if (e.target.matches('.atc')) {
+        const id = e.target.id;
+        const title = document.getElementById('nm' + id).textContent.trim();
+        if (cart[id]) {
+          cart[id].qty++;
+        } else {
+          cart[id] = { qty: 1, title: title };
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCounter();
+      }
+    });
+
+    updateCounter();
+  });
+  </script>
+</body>
 </html>
