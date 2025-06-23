@@ -4,47 +4,23 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-    crossorigin="anonymous"/>
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
-  <script
-    src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-    crossorigin="anonymous"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous"/>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="{% static 'shop/style.css' %}"/>
-  <title>Ecommerce</title>
+  <title>Watch Ecommerce</title>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Brand</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <div class="navbar-nav">
           <a class="nav-link active" href="#">Home</a>
           <a class="nav-link" href="#">Features</a>
-          <button
-            id="cart"
-            type="button"
-            class="btn btn-secondary"
-            data-bs-placement="bottom">
-              Cart(0)
-          </button>
+          <button id="cart" type="button" class="btn btn-secondary" data-bs-html="true" data-bs-placement="bottom" title="Your cart">Cart(0)</button>
           <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
         </div>
       </div>
@@ -55,11 +31,7 @@
     <form class="card card-sm mb-4">
       <div class="card-body row g-0 align-items-center">
         <div class="col">
-          <input
-            type="search"
-            name="item_name"
-            class="form-control form-control-borderless"
-            placeholder="Search for products"/>
+          <input type="search" name="item_name" class="form-control form-control-borderless" placeholder="Search for products"/>
         </div>
         <div class="col-auto">
           <button class="btn btn-success" type="submit">Search</button>
@@ -71,17 +43,14 @@
       {% for product in product_objects %}
       <div class="col-md-3 mb-4">
         <div class="card">
-          <img
-            src="{{ product.image }}"
-            class="card-img-top"
-            alt="{{ product.title }}"/>
+          <img src="{{ product.image }}" class="card-img-top" alt="{{ product.title }}"/>
           <div class="card-body">
             <h5 id="nm{{ product.id }}" class="card-title">{{ product.title }}</h5>
             <p class="card-text">{{ product.category }}</p>
             <p class="card-text">{{ product.description }}</p>
-            <p class="card-text">${{ product.price }}</p>
+            <p id="price{{product.id}}" class="card-text">${{ product.price }}</p>
             <a href="/{{ product.id }}" class="btn btn-warning">View</a>
-            <button id="{{ product.id }}" class="btn atc btn-warning">Add to Cart</button>
+            <button class="btn atc btn-warning" data-id="{{ product.id }}">Add to Cart</button>
           </div>
         </div>
       </div>
@@ -112,29 +81,28 @@
   <script>
   document.addEventListener('DOMContentLoaded', function() {
     const cartBtn = document.getElementById('cart');
-    let cart = JSON.parse(localStorage.getItem('cart') || '{}');
+    let cart = {};
+
+    try {
+      cart = JSON.parse(localStorage.getItem('cart')) || {};
+    } catch {
+      cart = {};
+    }
 
     function updateCounter() {
-      const totalQty = Object.values(cart).reduce((sum, item) => sum + item.qty, 0);
+      const totalQty = Object.values(cart).reduce((sum, item) => sum + (item[0] || 0), 0);
       cartBtn.textContent = `Cart(${totalQty})`;
     }
 
     function generateCartContent() {
-      if (!Object.keys(cart).length) {
-        return '<p><em>Your cart is empty</em></p>';
-      }
+      const keys = Object.keys(cart);
+      if (!keys.length) return '<p><em>Your cart is empty</em></p>';
       let html = '';
-      let index = 1;
-      for (const id in cart) {
-        const item = cart[id];
-        html += `${index}. ${item.title} — Qty: ${item.qty}<br/>`;
-        index++;
-      }
-      html += `<div class="mt-2">
-                    <a href="/checkout">
-                        <button class="btn btn-warning" id="checkout">Checkout</button>
-                    </a>
-                </div>`;
+      keys.forEach((id, idx) => {
+        const [qty, title, price] = cart[id];
+        html += `${idx + 1}. ${title} — Qty: ${qty} ($${price})<br/>`;
+      });
+      html += `<div class="mt-2"><a href="/checkout"><button class="btn btn-warning" id="checkout">Checkout</button></a></div>`;
       return html;
     }
 
@@ -152,17 +120,21 @@
     });
 
     document.body.addEventListener('click', function(e) {
-      if (e.target.matches('.atc')) {
-        const id = e.target.id;
-        const title = document.getElementById('nm' + id).textContent.trim();
-        if (cart[id]) {
-          cart[id].qty++;
-        } else {
-          cart[id] = { qty: 1, title: title };
-        }
-        localStorage.setItem('cart', JSON.stringify(cart));
-        updateCounter();
+      if (!e.target.classList.contains('atc')) return;
+      const id = e.target.getAttribute('data-id');
+      const titleEl = document.getElementById('nm' + id);
+      const priceEl = document.getElementById('price' + id);
+      const title = titleEl ? titleEl.textContent.trim() : `Item ${id}`;
+      const price = priceEl ? parseFloat(priceEl.textContent.replace('$', '')) : 0;
+
+      if (cart[id]) {
+        cart[id][0]++;
+      } else {
+        cart[id] = [1, title, price];
       }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCounter();
     });
 
     updateCounter();

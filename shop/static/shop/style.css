@@ -2,13 +2,13 @@ body {
     background-color: lightblue;
 }
 
-.card-text{
+.card-text {
     color: green;
     font-weight: 800;
 
 }
 
-.card-title{
+.card-title {
     font-weight: 900;
 }
 
@@ -22,4 +22,19 @@ body {
 #cardd {
     width: 260px;
     height: 500px;
+}
+
+.card {
+    width: 260px;
+    height: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }

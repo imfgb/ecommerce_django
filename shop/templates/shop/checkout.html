@@ -1,28 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link
+  <meta charset="UTF-8">
+  <title>Your Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-    crossorigin="anonymous"/>
-    <title>Document</title>
+    rel="stylesheet" crossorigin="anonymous">
+  <script
+    src="https://code.jquery.com/jquery-3.7.1.min.js"
+    crossorigin="anonymous"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="col-md-12">
-            <div class="row">
-                <ul class="list-group">
-                    <li class="list-group-item">An item</li>
-                    <li class="list-group-item">A second item</li>
-                    <li class="list-group-item">A third item</li>
-                    <li class="list-group-item">A fourth item</li>
-                    <li class="list-group-item">And a fifth one</li>
-                </ul>
-            </div>
-        </div>
+  <div class="container mt-5">
+    <h2 class="mb-4">Shopping Cart</h2>
+    <ul class="list-group" id="item_list"></ul>
+    <div class="mt-4">
+      <a href="/" class="btn btn-secondary">Continue Shopping</a>
+      <button class="btn btn-danger" id="clear_cart" type="button">Clear Cart</button>
     </div>
+  </div>
+
+  <br>
+  <div class="container">
+    <form method="POST" id="checkout_form">
+      {% csrf_token %}
+      <input type="hidden" id="items" name="items">
+      <input type="hidden" id="total" name="total">
+
+      <div class="mb-3">
+        <label for="name" class="form-label">Full Name</label>
+        <input type="text" class="form-control" id="name" name="name" placeholder="Your name" required>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email Address</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="mb-3">
+        <label for="address" class="form-label">Shipping Address</label>
+        <input type="text" class="form-control" id="address" name="address" placeholder="Street, number, neighborhood" required>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="city" class="form-label">City</label>
+          <input type="text" class="form-control" id="city" name="city" placeholder="City" required>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="state" class="form-label">State</label>
+          <input type="text" class="form-control" id="state" name="state" placeholder="State" required>
+        </div>
+        <div class="col-md-2 mb-3">
+          <label for="zipcode" class="form-label">ZIP Code</label>
+          <input type="text" class="form-control" id="zipcode" name="zipcode" placeholder="ZIP" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" id="purchase_btn">Place Order</button>
+    </form>
+  </div>
+
+  <script>
+    let isProcessing = false;
+
+    $(document).ready(function () {
+      let cart = {};
+      try {
+        cart = JSON.parse(localStorage.getItem('cart')) || {};
+      } catch (e) {
+        cart = {};
+      }
+
+      const keys = Object.keys(cart);
+      let total = 0;
+      if (keys.length === 0) {
+        $('#item_list').append('<li class="list-group-item">Your cart is currently empty.</li>');
+        $('#purchase_btn').prop('disabled', true);
+        $('#clear_cart').prop('disabled', true);
+      } else {
+        keys.forEach(function (id) {
+          const [qty, name, price] = cart[id];
+          const subtotal = qty * price;
+          total += subtotal;
+          $('#item_list').append(`
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>${name}</strong><br>
+                <small>${qty} x $${price.toFixed(2)} = <strong>$${subtotal.toFixed(2)}</strong></small>
+              </div>
+            </li>
+          `);
+        });
+
+        $('#item_list').append(`
+          <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+            <strong>Total</strong>
+            <span class="text-success fw-bold">$${total.toFixed(2)}</span>
+          </li>
+        `);
+
+        $('#items').val(JSON.stringify(cart));
+        $('#total').val(total.toFixed(2));
+      }
+
+      $('#clear_cart').click(function () {
+        if (isProcessing) return;
+        localStorage.removeItem('cart');
+        location.reload();
+      });
+
+      $('#checkout_form').on('submit', function (e) {
+        if (isProcessing) {
+          e.preventDefault();
+          return;
+        }
+
+        if (Object.keys(cart).length === 0) {
+          e.preventDefault();
+          $('body').prepend(`
+            <div class="position-fixed top-50 start-50 translate-middle p-4 rounded shadow bg-danger text-white fw-bold fs-5 text-center z-3" style="z-index:9999;">
+              You cannot checkout with an empty cart.
+            </div>
+          `);
+          setTimeout(function () {
+            $('.position-fixed').fadeOut('slow', function () {
+              $(this).remove();
+            });
+          }, 3000);
+          return;
+        }
+
+        isProcessing = true;
+        $('#purchase_btn').prop('disabled', true).text('Processing...');
+        $('#clear_cart').prop('disabled', true);
+      });
+    });
+  </script>
+
+  {% if success %}
+  <script>
+    $(document).ready(function () {
+      isProcessing = true;
+      localStorage.removeItem('cart');
+      $('#item_list').html('<li class="list-group-item">Your cart is currently empty.</li>');
+      $('#checkout_form')[0].reset();
+      $('#purchase_btn').prop('disabled', true).text('Place Order');
+      $('#clear_cart').prop('disabled', true);
+
+      $('body').prepend(`
+        <div class="position-fixed top-50 start-50 translate-middle p-5 rounded shadow bg-success text-white fw-bold fs-5 text-center z-3" style="z-index:9999;">
+          Order placed successfully!
+        </div>
+      `);
+      setTimeout(function () {
+        window.location.href = "/";
+      }, 4000);
+    });
+  </script>
+  {% endif %}
 </body>
 </html>
